@@ -12,6 +12,7 @@ from model import Shop
 from model import Stock
 from model import Sale
 
+
 def session_create(database_url):
 # Функция создания сессии и создания базы данных   
     engine = sqlalchemy.create_engine(database_url)
@@ -32,7 +33,7 @@ def json_load(session, file_json):
                 'book': Book,
                 'stock': Stock,
                 'sale': Sale,
-            }[record.get('model')]
+                }[record.get('model')]
             session.add(model(id=record.get('pk'), **record.get('fields')))
     session.commit()
 
@@ -43,7 +44,7 @@ def get_all(session):
     table_title = ["id", "Автор"]
     return table_print(table_title, avtors)
 
-def getshops(session, avtor):
+def get_shops(session, avtor):
 # Функция выборки данных из базы по фильтру    
     query = session.query(Book.title, Shop.name, Sale.price, Sale.date_sale) \
                         .select_from(Publisher) \
@@ -52,7 +53,7 @@ def getshops(session, avtor):
         query = query.filter(Publisher.id == avtor).all()
     else:
         query = query.filter(Publisher.name == avtor).all()                           
-    books=[]
+    books = []
     for sales in query:
         (book, shop, price, date_sale) = sales
         books.append((book, shop, price, date_sale))
@@ -77,10 +78,10 @@ if __name__ == '__main__':
     print(f'Все публицисты:')
     print(get_all(session))
     avtor = input('Введите id или имя публициста.')
-    if avtor !='':
-        books = getshops(session, avtor)
+    if avtor != '':
+        books = get_shops(session, avtor)
         if len(books) == 0:
             print('Продаж нет или публицист указан не верно.')
     else:
         print('Публицист не выбран.')
-    session.close_all
+    # session.close_all
